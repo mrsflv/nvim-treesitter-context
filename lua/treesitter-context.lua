@@ -559,13 +559,13 @@ local function highlight_contexts(bufnr, ctx_bufnr, contexts)
   local buf_query = buf_highlighter:get_query(parsers.ft_to_lang(vim.bo.filetype))
 
   local query = buf_query:query()
+  local root = get_root_node()
 
   for i, context in ipairs(contexts) do
     local start_row, _, end_row, end_col = unpack(context.range)
     local indents = context.indents
     local lines = context.lines
 
-    local root = context.node
     local start_row_abs = context.node:start()
 
     for capture, node in query:iter_captures(root, bufnr, start_row, context.node:end_()) do
