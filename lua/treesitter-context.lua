@@ -19,6 +19,7 @@ local defaultConfig = {
     zindex = 20,
     mode = "cursor", -- Choices: 'cursor', 'topline'
     separator = nil,
+    use_navic = false
 }
 
 local config = {}
@@ -227,7 +228,7 @@ local function get_text_for_node(node)
     local start_row, start_col = node:start()
     local end_row, end_col = node:end_()
 
-    local node_text = vim.treesitter.query.get_node_text(node, 0)
+    local node_text = vim.treesitter.get_node_text(node, 0)
     if node_text == nil then return nil, nil end
 
     local lines = vim.split(node_text, "\n")
@@ -400,15 +401,17 @@ local function get_parent_matches(max_lines)
             node = node:parent()
         end
 
-        -- workaround to catch the context even if there is an Error in the treesitter parser
-        local data = navic.is_available() and navic.get_data() or nil
-        if data and next(data) ~= nil then
-            parents[#parents + 1] = root_node:named_descendant_for_range(
+        -- XXX: workaround to catch the context even if there is an Error in the treesitter parser
+        if defaultConfig.use_navic then
+            local data = navic.is_available() and navic.get_data() or nil
+            if data and next(data) ~= nil then
+                parents[#parents + 1] = root_node:named_descendant_for_range(
                 data[1].scope.start.line - 1,
                 data[1].scope.start.character,
                 data[1].scope.start.line - 1,
                 120
-            )
+                )
+            end
         end
 
         for i = #parents, 1, -1 do
