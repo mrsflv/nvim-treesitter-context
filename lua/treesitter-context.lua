@@ -402,7 +402,7 @@ local function get_parent_matches(max_lines)
         end
 
         -- XXX: workaround to catch the context even if there is an Error in the treesitter parser
-        if defaultConfig.use_navic then
+        if config.use_navic then
             local data = navic.is_available() and navic.get_data() or nil
             if data and next(data) ~= nil then
                 parents[#parents + 1] = root_node:named_descendant_for_range(
